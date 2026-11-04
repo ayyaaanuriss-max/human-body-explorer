@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Human Body Explorer - PPLG Proyek IPAS</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        accent: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar and smooth transitions */
+        html {
+            scroll-behavior: smooth;
+        }
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+        }
+        /* Custom card hover effect */
+        .hover-card {
+            transition: all 0.25s ease;
+        }
+        .hover-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -10px rgba(14, 165, 233, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+
+    <!-- Header & Navigation Bar -->
+    <header class="bg-gradient-to-r from-brand-900 via-brand-800 to-slate-900 text-white sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+                    <div class="bg-brand-500 text-white p-2 rounded-xl shadow-lg">
+                        <i class="fa-solid fa-brain text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-heading font-bold text-lg leading-tight tracking-wide">HumanBody<span class="text-brand-500">Explorer</span></h1>
+                        <p class="text-xs text-brand-100 font-medium hidden sm:block">Proyek Modul IPAS - PPLG</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Buttons -->
+                <nav class="hidden lg:flex space-x-1 text-sm font-medium">
+                    <button onclick="switchTab('dashboard')" class="nav-btn px-3 py-2 rounded-lg transition hover:bg-brand-700/50 flex items-center space-x-1.5 active" data-tab="dashboard">
+                        <i class="fa-solid fa-house"></i><span>Beranda</span>
+                    </button>
+                    <button onclick="switchTab('saraf')" class="nav-btn px-3 py-2 rounded-lg transition hover:bg-brand-700/50 flex items-center space-x-1.5" data-tab="saraf">
+                        <i class="fa-solid fa-diagram-project"></i><span>Sistem Saraf</span>
+                    </button>
+                    <button onclick="switchTab('gerak')" class="nav-btn px-3 py-2 rounded-lg transition hover:bg-brand-700/50 flex items-center space-x-1.5" data-tab="gerak">
+                        <i class="fa-solid fa-bone"></i><span>Sistem Gerak</span>
+                    </button>
+                    <button onclick="switchTab('alur')" class="nav-btn px-3 py-2 rounded-lg transition hover:bg-brand-700/50 flex items-center space-x-1.5" data-tab="alur">
+                        <i class="fa-solid fa-bolt"></i><span>Alur Gerak</span>
+                    </button>
+                    <button onclick="switchTab('kuis')" class="nav-btn px-3 py-2 rounded-lg transition hover:bg-brand-700/50 flex items-center space-x-1.5" data-tab="kuis">
+                        <i class="fa-solid fa-graduation-cap"></i><span>Kuis</span>
+                    </button>
+                    <button onclick="switchTab('lkpd')" class="nav-btn px-3 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg transition flex items-center space-x-1.5 shadow" data-tab="lkpd">
+                        <i class="fa-solid fa-clipboard-list"></i><span>Jawaban LKPD</span>
+                    </button>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <div class="lg:hidden">
+                    <button id="mobile-menu-btn" class="p-2 rounded-lg bg-brand-800 text-white hover:bg-brand-700 focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-brand-900 border-t border-brand-800 px-4 pt-2 pb-4 space-y-2">
+            <button onclick="switchTab('dashboard')" class="mobile-nav-btn w-full text-left px-3 py-2 rounded-md font-medium text-white hover:bg-brand-800 flex items-center space-x-2">
+                <i class="fa-solid fa-house w-6"></i><span>Beranda</span>
+            </button>
+            <button onclick="switchTab('saraf')" class="mobile-nav-btn w-full text-left px-3 py-2 rounded-md font-medium text-white hover:bg-brand-800 flex items-center space-x-2">
+                <i class="fa-solid fa-diagram-project w-6"></i><span>Sistem Saraf</span>
+            </button>
+            <button onclick="switchTab('gerak')" class="mobile-nav-btn w-full text-left px-3 py-2 rounded-md font-medium text-white hover:bg-brand-800 flex items-center space-x-2">
+                <i class="fa-solid fa-bone w-6"></i><span>Sistem Gerak</span>
+            </button>
+            <button onclick="switchTab('alur')" class="mobile-nav-btn w-full text-left px-3 py-2 rounded-md font-medium text-white hover:bg-brand-800 flex items-center space-x-2">
+                <i class="fa-solid fa-bolt w-6"></i><span>Alur Gerak</span>
+            </button>
+            <button onclick="switchTab('kuis')" class="mobile-nav-btn w-full text-left px-3 py-2 rounded-md font-medium text-white hover:bg-brand-800 flex items-center space-x-2">
+                <i class="fa-solid fa-graduation-cap w-6"></i><span>Kuis Interaktif</span>
+            </button>
+            <button onclick="switchTab('lkpd')" class="mobile-nav-btn w-full text-left px-3 py-2 rounded-md font-medium text-white bg-brand-600 hover:bg-brand-500 flex items-center space-x-2">
+                <i class="fa-solid fa-clipboard-list w-6"></i><span>Tabel Jawaban LKPD</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
+
+        <!-- ================= TAB 1: DASHBOARD ================= -->
+        <section id="tab-dashboard" class="tab-content active space-y-8">
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-brand-700 via-brand-600 to-teal-600 text-white p-8 md:p-12 shadow-xl flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="relative z-10 max-w-xl space-y-4">
+                    <span class="inline-block bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">
+                        Modul Pembelajaran PPLG - IPAS
+                    </span>
+                    <h2 class="font-heading text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">
+                        Eksplorasi Anatomi & Kontrol Gerak Tubuh Manusia
+                    </h2>
+                    <p class="text-brand-100 text-sm sm:text-base leading-relaxed">
+                        Aplikasi interaktif yang dirancang khusus untuk siswa PPLG dalam memahami koordinasi Sistem Saraf, Sistem Gerak, serta Mekanisme Gerak Sadar dan Refleks secara visual dan modern.
+                    </p>
+                    <div class="pt-4 flex flex-wrap gap-3">
+                        <button onclick="switchTab('saraf')" class="bg-white text-brand-800 font-semibold px-6 py-3 rounded-xl shadow-lg hover:bg-brand-50 transition flex items-center space-x-2">
+                            <span>Mulai Belajar</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <button onclick="switchTab('lkpd')" class="bg-brand-900/50 backdrop-blur-md text-white border border-white/20 font-semibold px-6 py-3 rounded-xl hover:bg-brand-900/80 transition flex items-center space-x-2">
+                            <i class="fa-solid fa-table"></i>
+                            <span>Lihat Jawaban LKPD</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hero Graphic Illustration -->
+                <div class="relative z-10 w-full md:w-80 flex justify-center">
+                    <svg viewBox="0 0 300 400" class="w-64 sm:w-72 drop-shadow-2xl">
+                        <!-- Head / Brain highlight -->
+                        <circle cx="150" cy="70" r="40" fill="#38bdf8" opacity="0.3"/>
+                        <circle cx="150" cy="70" r="30" fill="none" stroke="#ffffff" stroke-width="3" stroke-dasharray="4,4"/>
+                        <circle cx="150" cy="65" r="18" fill="#a855f7"/>
+                        <path d="M 140 60 C 145 50, 155 50, 160 60 C 165 65, 165 75, 155 78 Z" fill="#c084fc"/>
+                        
+                        <!-- Spinal Cord Axis -->
+                        <line x1="150" y1="100" x2="150" y2="280" stroke="#38bdf8" stroke-width="8" stroke-linecap="round"/>
+                        <line x1="150" y1="100" x2="150" y2="280" stroke="#ffffff" stroke-width="3" stroke-dasharray="6,4"/>
+
+                        <!-- Nerve Branches -->
+                        <path d="M 150 120 Q 110 130 80 160 M 150 120 Q 190 130 220 160" stroke="#38bdf8" stroke-width="3" fill="none"/>
+                        <path d="M 150 160 Q 100 180 70 220 M 150 160 Q 200 180 230 220" stroke="#38bdf8" stroke-width="3" fill="none"/>
+                        <path d="M 150 220 Q 120 250 100 340 M 150 220 Q 180 250 200 340" stroke="#38bdf8" stroke-width="3.5" fill="none"/>
+
+                        <!-- Nodes / Joints -->
+                        <circle cx="80" cy="160" r="6" fill="#34d399"/>
+                        <circle cx="220" cy="160" r="6" fill="#34d399"/>
+                        <circle cx="70" cy="220" r="6" fill="#fbbf24"/>
+                        <circle cx="230" cy="220" r="6" fill="#fbbf24"/>
+                        <circle cx="100" cy="340" r="6" fill="#f87171"/>
+                        <circle cx="200" cy="340" r="6" fill="#f87171"/>
+
+                        <!-- Label Overlay -->
+                        <rect x="70" y="20" width="160" height="28" rx="14" fill="#ffffff" opacity="0.9"/>
+                        <text x="150" y="38" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="bold" font-family="sans-serif">Sistem Saraf & Gerak</text>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Features Quick Access Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div onclick="switchTab('saraf')" class="hover-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm cursor-pointer space-y-3">
+                    <div class="w-12 h-12 bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <h3 class="font-heading font-semibold text-lg text-slate-800">Sistem Saraf</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Pelajari peran Otak, Sumsum Tulang Belakang, dan Saraf Tepi sebagai pusat kendali sinyal impuls tubuh.
+                    </p>
+                    <span class="text-brand-600 text-xs font-semibold inline-flex items-center space-x-1 pt-2">
+                        <span>Pelajari materi</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </span>
+                </div>
+
+                <!-- Card 2 -->
+                <div onclick="switchTab('gerak')" class="hover-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm cursor-pointer space-y-3">
+                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-bone"></i>
+                    </div>
+                    <h3 class="font-heading font-semibold text-lg text-slate-800">Sistem Gerak</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Pahami keterkaitan Tulang (rangka pasif), Sendi (penghubung), dan Otot (alat gerak aktif).
+                    </p>
+                    <span class="text-emerald-600 text-xs font-semibold inline-flex items-center space-x-1 pt-2">
+                        <span>Pelajari materi</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </span>
+                </div>
+
+                <!-- Card 3 -->
+                <div onclick="switchTab('alur')" class="hover-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm cursor-pointer space-y-3">
+                    <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <h3 class="font-heading font-semibold text-lg text-slate-800">Gerak Sadar vs Refleks</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Analisis perbedaan lintasan impuls saraf saat merespons perintah otak dibanding respons otomatis refleks.
+                    </p>
+                    <span class="text-amber-600 text-xs font-semibold inline-flex items-center space-x-1 pt-2">
+                        <span>Lihat bagan alur</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: SISTEM SARAF ================= -->
+        <section id="tab-saraf" class="tab-content space-y-8">
+            <div class="border-b border-slate-200 pb-4">
+                <h2 class="font-heading text-2xl sm:text-3xl font-bold text-slate-800">Sistem Saraf Manusia</h2>
+                <p class="text-slate-600 text-sm mt-1">Klik bagian anatomi atau hotspot pada diagram interaktif di bawah untuk mempelajari fungsinya!</p>
+            </div>
+
+            <!-- Interactive Diagram Section -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <!-- SVG Anatomy Body Hotspot Visual -->
+                <div class="relative bg-slate-900 rounded-2xl p-6 flex justify-center items-center overflow-hidden min-h-[380px]">
+                    <!-- Background Glow -->
+                    <div class="absolute w-48 h-48 bg-brand-500/20 rounded-full blur-3xl"></div>
+
+                    <!-- Human Body Anatomy Vector Diagram -->
+                    <svg viewBox="0 0 200 400" class="h-80 sm:h-96 z-10">
+                        <!-- Human Outline Silhouette -->
+                        <path d="M 100 20 C 115 20, 125 32, 125 50 C 125 62, 118 70, 115 75 C 130 80, 150 95, 155 120 L 165 200 C 167 210, 155 215, 150 205 L 140 140 L 135 220 L 138 360 C 138 375, 120 375, 118 360 L 108 260 L 100 260 L 92 260 L 82 360 C 80 375, 62 375, 62 360 L 65 220 L 60 140 L 50 205 C 45 215, 33 210, 35 200 L 45 120 C 50 95, 70 80, 85 75 C 82 70, 75 62, 75 50 C 75 32, 85 20, 100 20 Z" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+
+                        <!-- Brain SVG Graphic -->
+                        <g id="svg-brain" class="cursor-pointer group" onclick="highlightSarafInfo('brain')">
+                            <circle cx="100" cy="45" r="16" fill="#a855f7" class="animate-pulse opacity-40"/>
+                            <path d="M 92 40 C 90 35, 96 30, 102 32 C 108 30, 112 36, 110 42 C 114 46, 108 52, 102 50 C 96 52, 90 46, 92 40 Z" fill="#c084fc" stroke="#ffffff" stroke-width="1.5"/>
+                            <circle cx="100" cy="45" r="22" fill="none" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="3,3"/>
+                        </g>
+
+                        <!-- Spinal Cord Graphic -->
+                        <g id="svg-spinal" class="cursor-pointer group" onclick="highlightSarafInfo('spinal')">
+                            <line x1="100" y1="62" x2="100" y2="210" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+                            <line x1="100" y1="62" x2="100" y2="210" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4,3"/>
+                        </g>
+
+                        <!-- Nerves Graphic -->
+                        <g id="svg-nerves" class="cursor-pointer group" onclick="highlightSarafInfo('nerves')">
+                            <!-- Left and Right Nerves -->
+                            <path d="M 100 100 Q 75 110 50 170 M 100 100 Q 125 110 150 170" stroke="#2dd4bf" stroke-width="2" fill="none"/>
+                            <path d="M 100 140 Q 70 150 55 200 M 100 140 Q 130 150 145 200" stroke="#2dd4bf" stroke-width="2" fill="none"/>
+                            <path d="M 100 200 Q 80 230 75 350 M 100 200 Q 120 230 125 350" stroke="#2dd4bf" stroke-width="2.5" fill="none"/>
+                        </g>
+
+                        <!-- Hotspot Pin 1: Otak -->
+                        <g class="cursor-pointer" onclick="highlightSarafInfo('brain')">
+                            <line x1="100" y1="45" x2="160" y2="35" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="2,2"/>
+                            <circle cx="160" cy="35" r="10" fill="#a855f7"/>
+                            <text x="160" y="39" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="bold">1</text>
+                        </g>
+
+                        <!-- Hotspot Pin 2: Sumsum Tulang Belakang -->
+                        <g class="cursor-pointer" onclick="highlightSarafInfo('spinal')">
+                            <line x1="100" y1="130" x2="165" y2="130" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="2,2"/>
+                            <circle cx="165" cy="130" r="10" fill="#38bdf8"/>
+                            <text x="165" y="134" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="bold">2</text>
+                        </g>
+
+                        <!-- Hotspot Pin 3: Saraf Tepi -->
+                        <g class="cursor-pointer" onclick="highlightSarafInfo('nerves')">
+                            <line x1="75" y1="260" x2="25" y2="260" stroke="#2dd4bf" stroke-width="1.5" stroke-dasharray="2,2"/>
+                            <circle cx="25" cy="260" r="10" fill="#2dd4bf"/>
+                            <text x="25" y="264" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="bold">3</text>
+                        </g>
+                    </svg>
+
+                    <!-- Instructional Label -->
+                    <div class="absolute bottom-3 left-4 bg-slate-800/80 backdrop-blur px-3 py-1.5 rounded-lg text-xs text-slate-300">
+                        <i class="fa-solid fa-hand-pointer text-brand-400 mr-1"></i> Sentuh Pin [1], [2], atau [3]
+                    </div>
+                </div>
+
+                <!-- Info Display Panel -->
+                <div class="space-y-4">
+                    <div id="saraf-info-card" class="bg-purple-50 p-6 rounded-2xl border border-purple-200 space-y-3 transition-all">
+                        <div class="flex items-center space-x-3">
+                            <span id="saraf-badge" class="px-3 py-1 bg-purple-600 text-white font-bold rounded-lg text-xs">
+                                Bagian #1
+                            </span>
+                            <h3 id="saraf-title" class="font-heading font-bold text-xl text-purple-950">1. Otak (Brain)</h3>
+                        </div>
+                        <p id="saraf-desc" class="text-slate-700 text-sm leading-relaxed">
+                            Pusat pemrosesan informasi tertinggi dalam tubuh. Bertanggung jawab atas berpikir, memori, emosi, dan perintah gerakan sadar.
+                        </p>
+                        <div id="saraf-bullets" class="bg-white/80 p-3 rounded-xl border border-purple-100 text-xs text-purple-900 space-y-1">
+                            <p class="font-semibold">Sub-bagian Utama:</p>
+                            <ul class="list-disc list-inside space-y-0.5">
+                                <li>Otak Besar (Cerebrum): Berpikir & kesadaran</li>
+                                <li>Otak Kecil (Cerebellum): Keseimbangan & koordinasi</li>
+                                <li>Batang Otak (Brainstem): Fungsi otonomik vital</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Quick Switch Buttons -->
+                    <div class="grid grid-cols-3 gap-2 text-xs font-semibold">
+                        <button onclick="highlightSarafInfo('brain')" class="p-3 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-xl transition text-center">
+                            1. Otak
+                        </button>
+                        <button onclick="highlightSarafInfo('spinal')" class="p-3 bg-sky-100 hover:bg-sky-200 text-sky-800 rounded-xl transition text-center">
+                            2. Sumsum
+                        </button>
+                        <button onclick="highlightSarafInfo('nerves')" class="p-3 bg-teal-100 hover:bg-teal-200 text-teal-800 rounded-xl transition text-center">
+                            3. Saraf Tepi
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visual Component Cards -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Otak -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                    <div class="p-6 space-y-4">
+                        <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h3 class="font-heading font-bold text-xl text-slate-800">1. Otak (Brain)</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            Pusat pemrosesan informasi tertinggi dalam tubuh. Bertanggung jawab atas berpikir, memori, emosi, dan perintah gerakan sadar.
+                        </p>
+                        <div class="bg-purple-50 p-3 rounded-xl border border-purple-100 text-xs text-purple-900 space-y-1">
+                            <p class="font-semibold">Bagian Utama:</p>
+                            <ul class="list-disc list-inside space-y-0.5 text-purple-800">
+                                <li>Otak Besar (Cerebrum): Berpikir & kesadaran</li>
+                                <li>Otak Kecil (Cerebellum): Keseimbangan & koordinasi</li>
+                                <li>Batang Otak (Brainstem): Fungsi otonomik dasar</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 px-6 py-3 border-t border-slate-100 text-xs text-slate-500 font-medium">
+                        Bagian dari Pusat Saraf (CNS)
+                    </div>
+                </div>
+
+                <!-- Sumsum Tulang Belakang -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                    <div class="p-6 space-y-4">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-wave-square"></i>
+                        </div>
+                        <h3 class="font-heading font-bold text-xl text-slate-800">2. Sumsum Tulang Belakang</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            Jalur utama penghubung impuls antara otak dan anggota tubuh bawah, serta bertindak sebagai pusat kendali refleks cepat.
+                        </p>
+                        <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 text-xs text-blue-900 space-y-1">
+                            <p class="font-semibold">Fungsi Utama:</p>
+                            <ul class="list-disc list-inside space-y-0.5 text-blue-800">
+                                <li>Meneruskan sinyal sensorik ke otak</li>
+                                <li>Meneruskan sinyal motorik ke otot</li>
+                                <li>Memproses gerak refleks darurat</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 px-6 py-3 border-t border-slate-100 text-xs text-slate-500 font-medium">
+                        Bagian dari Pusat Saraf (CNS)
+                    </div>
+                </div>
+
+                <!-- Saraf Tepi -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                    <div class="p-6 space-y-4">
+                        <div class="w-12 h-12 bg-teal-100 text-teal-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-network-wired"></i>
+                        </div>
+                        <h3 class="font-heading font-bold text-xl text-slate-800">3. Saraf Tepi (PNS)</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            Jaringan saraf yang menyebar ke seluruh bagian luar tubuh (kulit, otot, organ) untuk menghubungkan rangsangan dengan pusat saraf.
+                        </p>
+                        <div class="bg-teal-50 p-3 rounded-xl border border-teal-100 text-xs text-teal-900 space-y-1">
+                            <p class="font-semibold">Komponen Saraf:</p>
+                            <ul class="list-disc list-inside space-y-0.5 text-teal-800">
+                                <li>Saraf Sensorik (Afferent): Penerima rangsang</li>
+                                <li>Saraf Motorik (Efferent): Pembawa perintah otot</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 px-6 py-3 border-t border-slate-100 text-xs text-slate-500 font-medium">
+                        Sistem Saraf Tepi (PNS)
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: SISTEM GERAK ================= -->
+        <section id="tab-gerak" class="tab-content space-y-8">
+            <div class="border-b border-slate-200 pb-4">
+                <h2 class="font-heading text-2xl sm:text-3xl font-bold text-slate-800">Sistem Gerak Manusia</h2>
+                <p class="text-slate-600 text-sm mt-1">Kombinasi antara komponen pasif dan aktif yang memungkinkan tubuh bergerak dinamis.</p>
+            </div>
+
+            <!-- Graphical Illustration Grid for Skeletal & Muscular Systems -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Visual Card 1: Tulang -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
+                    <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-6 flex justify-center items-center text-white relative h-48">
+                        <svg viewBox="0 0 100 100" class="h-32 drop-shadow-md">
+                            <path d="M 30 20 C 20 20, 20 35, 35 35 L 45 45 L 45 55 L 35 65 C 20 65, 20 80, 30 80 C 40 80, 45 70, 45 65 L 55 65 C 55 70, 60 80, 70 80 C 80 80, 80 65, 65 65 L 55 55 L 55 45 L 65 35 C 80 35, 80 20, 70 20 C 60 20, 55 30, 55 35 L 45 35 C 45 30, 40 20, 30 20 Z" fill="#ffffff" stroke="#fed7aa" stroke-width="2"/>
+                        </svg>
+                        <span class="absolute bottom-3 left-4 bg-black/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">
+                            Alat Gerak Pasif
+                        </span>
+                    </div>
+                    <div class="p-6 pt-0 space-y-2">
+                        <h3 class="font-heading font-bold text-xl text-slate-800">Tulang (Rangka)</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            Memberikan struktur tubuh, melindungi organ dalam vital, dan tempat melekatnya otot. Tulang tidak dapat bergerak sendiri tanpa ditarik oleh otot.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Visual Card 2: Sendi -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
+                    <div class="bg-gradient-to-br from-indigo-500 to-blue-600 p-6 flex justify-center items-center text-white relative h-48">
+                        <svg viewBox="0 0 100 100" class="h-32 drop-shadow-md">
+                            <!-- Ball & Socket Joint Vector Graphic -->
+                            <path d="M 20 50 L 40 50" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                            <circle cx="45" cy="50" r="14" fill="#ffffff"/>
+                            <path d="M 45 30 C 60 30, 70 38, 70 50 C 70 62, 60 70, 45 70" fill="none" stroke="#a5f3fc" stroke-width="6"/>
+                            <path d="M 68 50 L 85 50" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                        </svg>
+                        <span class="absolute bottom-3 left-4 bg-black/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">
+                            Penghubung Flexible
+                        </span>
+                    </div>
+                    <div class="p-6 pt-0 space-y-2">
+                        <h3 class="font-heading font-bold text-xl text-slate-800">Sendi (Artikulasi)</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            Titik pertemuan antartulang yang memungkinkan terjadinya gerakan fleksibel. Contoh: Sendi engsel (siku/lutut) dan sendi peluru (bahu/panggul).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Visual Card 3: Otot -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
+                    <div class="bg-gradient-to-br from-rose-500 to-red-600 p-6 flex justify-center items-center text-white relative h-48">
+                        <svg viewBox="0 0 100 100" class="h-32 drop-shadow-md">
+                            <!-- Biceps Muscle Graphic -->
+                            <path d="M 25 50 Q 50 20 75 50 Q 50 80 25 50 Z" fill="#ffffff" stroke="#fecdd3" stroke-width="2"/>
+                            <path d="M 35 50 Q 50 32 65 50 Q 50 68 35 50 Z" fill="#fda4af"/>
+                            <line x1="10" y1="50" x2="25" y2="50" stroke="#ffffff" stroke-width="5"/>
+                            <line x1="75" y1="50" x2="90" y2="50" stroke="#ffffff" stroke-width="5"/>
+                        </svg>
+                        <span class="absolute bottom-3 left-4 bg-black/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">
+                            Alat Gerak Aktif
+                        </span>
+                    </div>
+                    <div class="p-6 pt-0 space-y-2">
+                        <h3 class="font-heading font-bold text-xl text-slate-800">Otot</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            Jaringan yang dapat berkontraksi dan memendek untuk menarik tulang sehingga menghasilkan gerakan fisik nyata pada tubuh.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: ALUR GERAK ================= -->
+        <section id="tab-alur" class="tab-content space-y-8">
+            <div class="border-b border-slate-200 pb-4">
+                <h2 class="font-heading text-2xl sm:text-3xl font-bold text-slate-800">Mekanisme Alur Gerak</h2>
+                <p class="text-slate-600 text-sm mt-1">Perbandingan alur perjalanan impuls saraf pada gerakan disadari versus gerakan otomatis (refleks).</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Gerak Sadar Flowchart -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-3 bg-brand-100 text-brand-700 rounded-xl font-bold">
+                            <i class="fa-solid fa-user-check text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-heading font-bold text-xl text-slate-800">1. Gerak Sadar</h3>
+                            <p class="text-xs text-slate-500">Diproses dan diperintahkan secara sadar oleh Otak</p>
+                        </div>
+                    </div>
+
+                    <!-- Flow Diagram -->
+                    <div class="space-y-3 relative">
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center font-medium text-slate-700 text-sm">
+                            <i class="fa-solid fa-eye text-brand-500 mr-2"></i>Rangsangan (Impuls diterima Reseptor)
+                        </div>
+                        <div class="text-center text-brand-500 font-bold"><i class="fa-solid fa-arrow-down"></i></div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center font-medium text-slate-700 text-sm">
+                            Saraf Sensorik (Meneruskan sinyal)
+                        </div>
+                        <div class="text-center text-brand-500 font-bold"><i class="fa-solid fa-arrow-down"></i></div>
+
+                        <div class="bg-brand-500 text-white p-3 rounded-xl text-center font-bold text-sm shadow-md">
+                            <i class="fa-solid fa-brain mr-2"></i>OTAK (Dianalisis & Diputuskan)
+                        </div>
+                        <div class="text-center text-brand-500 font-bold"><i class="fa-solid fa-arrow-down"></i></div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center font-medium text-slate-700 text-sm">
+                            Saraf Motorik (Membawa sinyal perintah)
+                        </div>
+                        <div class="text-center text-brand-500 font-bold"><i class="fa-solid fa-arrow-down"></i></div>
+
+                        <div class="bg-emerald-50 text-emerald-800 p-3 rounded-xl border border-emerald-200 text-center font-bold text-sm">
+                            Efektor / Otot (Menghasilkan Gerakan)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gerak Refleks Flowchart -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-3 bg-rose-100 text-rose-700 rounded-xl font-bold">
+                            <i class="fa-solid fa-bolt text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-heading font-bold text-xl text-slate-800">2. Gerak Refleks</h3>
+                            <p class="text-xs text-slate-500">Pintas tanpa dipikirkan di Otak (Respon Darurat)</p>
+                        </div>
+                    </div>
+
+                    <!-- Flow Diagram -->
+                    <div class="space-y-3 relative">
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center font-medium text-slate-700 text-sm">
+                            <i class="fa-solid fa-fire-flame-curved text-rose-500 mr-2"></i>Rangsangan Bahaya (Panas/Sakit)
+                        </div>
+                        <div class="text-center text-rose-500 font-bold"><i class="fa-solid fa-arrow-down"></i></div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center font-medium text-slate-700 text-sm">
+                            Saraf Sensorik (Meneruskan sinyal kilat)
+                        </div>
+                        <div class="text-center text-rose-500 font-bold"><i class="fa-solid fa-arrow-down"></i></div>
+
+                        <div class="bg-rose-600 text-white p-3 rounded-xl text-center font-bold text-sm shadow-md">
+                            <i class="fa-solid fa-wave-square mr-2"></i>SUMSUM TULANG BELAKANG
+                        </div>
+                        <div class="text-center text-rose-500 font-bold"><i class="fa-solid fa-arrow-down"></i></div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center font-medium text-slate-700 text-sm">
+                            Saraf Motorik (Instruksi penarikan instan)
+                        </div>
+                        <div class="text-center text-rose-500 font-bold"><i class="fa-solid fa-arrow-down"></i></div>
+
+                        <div class="bg-emerald-50 text-emerald-800 p-3 rounded-xl border border-emerald-200 text-center font-bold text-sm">
+                            Efektor / Otot (Menarik Tubuh Secara Otomatis)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 5: KUIS INTERAKTIF ================= -->
+        <section id="tab-kuis" class="tab-content space-y-8">
+            <div class="border-b border-slate-200 pb-4">
+                <h2 class="font-heading text-2xl sm:text-3xl font-bold text-slate-800">Kuis Evaluasi Pemahaman</h2>
+                <p class="text-slate-600 text-sm mt-1">Uji pemahaman materi Sistem Saraf dan Sistem Gerak kelompok kamu di sini.</p>
+            </div>
+
+            <div class="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-8">
+                <!-- Quiz Container -->
+                <div id="quiz-box" class="space-y-6">
+                    <!-- Questions will be injected by JavaScript -->
+                </div>
+
+                <!-- Result Box (Hidden by default) -->
+                <div id="quiz-result" class="hidden text-center space-y-6 py-6">
+                    <div class="w-20 h-20 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center text-3xl font-bold mx-auto">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h3 class="font-heading text-2xl font-bold text-slate-800">Hasil Kuis Kamu</h3>
+                    <p class="text-slate-600 text-sm">Skor Akhir:</p>
+                    <div id="quiz-score-text" class="text-5xl font-extrabold text-brand-600">0 / 100</div>
+                    <p id="quiz-feedback" class="text-slate-700 font-medium text-base"></p>
+                    <button onclick="resetQuiz()" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-3 rounded-xl transition inline-flex items-center space-x-2">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Coba Kuis Lagi</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 6: JAWABAN LKPD ================= -->
+        <section id="tab-lkpd" class="tab-content space-y-8">
+            <div class="border-b border-slate-200 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="font-heading text-2xl sm:text-3xl font-bold text-slate-800">Daftar Jawaban LKPD IPAS</h2>
+                    <p class="text-slate-600 text-sm mt-1">Rangkuman jawaban resmi untuk Aktivitas 1, 2, dan 3 yang dapat langsung disalin ke lembar kerja.</p>
+                </div>
+            </div>
+
+            <!-- Aktivitas 1 Table -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-4 p-6">
+                <h3 class="font-heading font-bold text-lg text-brand-800 flex items-center space-x-2">
+                    <i class="fa-solid fa-table text-brand-500"></i>
+                    <span>Aktivitas 1: Organ Sistem Saraf & Sistem Gerak</span>
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                                <th class="p-3">Organ / Bagian</th>
+                                <th class="p-3">Sistem</th>
+                                <th class="p-3">Fungsi Utama</th>
+                                <th class="p-3">Contoh Peran Sehari-hari</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 text-slate-600">
+                            <tr>
+                                <td class="p-3 font-semibold text-slate-800">Otak</td>
+                                <td class="p-3">Saraf Pusat</td>
+                                <td class="p-3">Menganalisis sinyal, memproses pemikiran, perintah gerak sadar.</td>
+                                <td class="p-3">Memikirkan logika baris kode program saat mengoding.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-slate-800">Sumsum Tulang Belakang</td>
+                                <td class="p-3">Saraf Pusat</td>
+                                <td class="p-3">Pusat refleks & penghubung impuls otak dengan seluruh tubuh.</td>
+                                <td class="p-3">Menarik tangan otomatis saat tidak sengaja menyentuh laptop panas.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-slate-800">Saraf Tepi</td>
+                                <td class="p-3">Saraf Tepi</td>
+                                <td class="p-3">Meneruskan sinyal dari sensorik ke pusat saraf & balik ke otot.</td>
+                                <td class="p-3">Merasakan tekstur tombol keyboard pada jari tangan.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-slate-800">Tulang</td>
+                                <td class="p-3">Gerak Pasif</td>
+                                <td class="p-3">Menopang struktur tubuh & tempat menempelnya otot.</td>
+                                <td class="p-3">Tulang jari menjaga posisi bentuk tangan saat memegang mouse.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-slate-800">Sendi</td>
+                                <td class="p-3">Penghubung</td>
+                                <td class="p-3">Titik artikulasi fleksibel antartulang.</td>
+                                <td class="p-3">Sendi engsel siku menekuk saat mengangkat minum.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-slate-800">Otot</td>
+                                <td class="p-3">Gerak Aktif</td>
+                                <td class="p-3">Berkontraksi untuk menarik tulang menghasilkan gerakan.</td>
+                                <td class="p-3">Otot bisep berkontraksi menarik lengan bawah.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Aktivitas 2 & 3 Details -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Aktivitas 2 -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                    <h3 class="font-heading font-bold text-lg text-brand-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-list-check text-brand-500"></i>
+                        <span>Aktivitas 2: Analisis Alur Gerak Refleks</span>
+                    </h3>
+                    <p class="text-xs text-slate-500">Contoh Peristiwa: Menarik tangan saat terkena paku/benda tajam.</p>
+                    <ol class="list-decimal list-inside text-sm text-slate-600 space-y-1.5 pt-2">
+                        <li><strong>Reseptor kulit</strong> menerima rangsangan rasa sakit.</li>
+                        <li><strong>Saraf Sensorik</strong> mengirimkan impuls ke sumsum tulang belakang.</li>
+                        <li><strong>Sumsum Tulang Belakang</strong> langsung mengolah sinyal (pintas otak).</li>
+                        <li><strong>Saraf Motorik</strong> membawa sinyal tanggap darurat ke otot.</li>
+                        <li><strong>Otot lengan</strong> berkontraksi cepat menarik tangan menjauh.</li>
+                    </ol>
+                </div>
+
+                <!-- Aktivitas 3 -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                    <h3 class="font-heading font-bold text-lg text-brand-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-circle-question text-brand-500"></i>
+                        <span>Aktivitas 3: Pertanyaan Analisis</span>
+                    </h3>
+                    <div class="space-y-2 text-sm text-slate-600">
+                        <p class="font-semibold text-slate-800">Mengapa gerak refleks terjadi lebih cepat daripada gerak sadar?</p>
+                        <p class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            Karena lintasan impuls gerak refleks tidak melewati otak untuk dianalisis terlebih dahulu, melainkan diproses langsung melalui jalur pintas di sumsum tulang belakang demi perlindungan tubuh instan.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 text-center text-xs">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>© 2026 Digital Human Body Explorer - Proyek IPAS PPLG SMK</p>
+            <p class="mt-1 text-slate-500">Dibuat menggunakan HTML, Tailwind CSS, & Vanilla JavaScript.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Data for Interactive Saraf Component
+        const sarafData = {
+            brain: {
+                badge: 'Bagian #1',
+                title: '1. Otak (Brain)',
+                desc: 'Pusat pemrosesan informasi tertinggi dalam tubuh. Bertanggung jawab atas berpikir, memori, emosi, dan perintah gerakan sadar.',
+                bullets: [
+                    'Otak Besar (Cerebrum): Berpikir, memori & kesadaran',
+                    'Otak Kecil (Cerebellum): Keseimbangan & koordinasi gerakan halus',
+                    'Batang Otak (Brainstem): Mengontrol detak jantung & pernapasan'
+                ],
+                bgClass: 'bg-purple-50',
+                borderClass: 'border-purple-200',
+                titleClass: 'text-purple-950',
+                badgeBg: 'bg-purple-600'
+            },
+            spinal: {
+                badge: 'Bagian #2',
+                title: '2. Sumsum Tulang Belakang (Spinal Cord)',
+                desc: 'Jalur utama penghubung sinyal impuls antara otak dengan seluruh bagian tubuh bawah, serta berperan sebagai pusat kendali gerak refleks cepat.',
+                bullets: [
+                    'Menyampaikan sinyal sensorik dari tubuh ke otak',
+                    'Meneruskan sinyal perintah motorik dari otak ke otot',
+                    'Pusat kendali refleks tanggap darurat (pintas otak)'
+                ],
+                bgClass: 'bg-sky-50',
+                borderClass: 'border-sky-200',
+                titleClass: 'text-sky-950',
+                badgeBg: 'bg-sky-600'
+            },
+            nerves: {
+                badge: 'Bagian #3',
+                title: '3. Saraf Tepi (Peripheral Nerves)',
+                desc: 'Jaringan kabel saraf yang menyebar ke seluruh organ, kulit, dan otot tubuh untuk mentransmisikan impuls listrik secara berkesinambungan.',
+                bullets: [
+                    'Saraf Sensorik (Afferent): Mengirimkan rangsangan dari kulit/indra ke pusat saraf',
+                    'Saraf Motorik (Efferent): Membawa perintah aksi dari pusat saraf ke otot'
+                ],
+                bgClass: 'bg-teal-50',
+                borderClass: 'border-teal-200',
+                titleClass: 'text-teal-950',
+                badgeBg: 'bg-teal-600'
+            }
+        };
+
+        function highlightSarafInfo(key) {
+            const data = sarafData[key];
+            if (!data) return;
+
+            const card = document.getElementById('saraf-info-card');
+            const badge = document.getElementById('saraf-badge');
+            const title = document.getElementById('saraf-title');
+            const desc = document.getElementById('saraf-desc');
+            const bullets = document.getElementById('saraf-bullets');
+
+            // Reset Card Style
+            card.className = `${data.bgClass} p-6 rounded-2xl border ${data.borderClass} space-y-3 transition-all duration-300`;
+            badge.className = `px-3 py-1 ${data.badgeBg} text-white font-bold rounded-lg text-xs`;
+            badge.innerText = data.badge;
+
+            title.className = `font-heading font-bold text-xl ${data.titleClass}`;
+            title.innerText = data.title;
+
+            desc.innerText = data.desc;
+
+            let bulletList = data.bullets.map(b => `<li>${b}</li>`).join('');
+            bullets.innerHTML = `
+                <p class="font-semibold mb-1">Poin Penting:</p>
+                <ul class="list-disc list-inside space-y-1">${bulletList}</ul>
+            `;
+        }
+
+        // Tab Navigation Logic
+        function switchTab(tabId) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show current tab
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+
+            // Update Active Navigation State
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => {
+                if (btn.getAttribute('data-tab') === tabId) {
+                    btn.classList.add('bg-brand-700', 'text-white');
+                } else if (!btn.classList.contains('bg-brand-600')) {
+                    btn.classList.remove('bg-brand-700');
+                }
+            });
+
+            // Close mobile menu if open
+            document.getElementById('mobile-menu').classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Interactive Quiz Data
+        const quizQuestions = [
+            {
+                question: "1. Organ manakah yang berfungsi sebagai pusat kesadaran dan perintah gerak sadar?",
+                options: ["Sumsum Tulang Belakang", "Otak", "Saraf Tepi", "Sendi Peluru"],
+                answer: 1
+            },
+            {
+                question: "2. Alat gerak pasif pada tubuh manusia adalah...",
+                options: ["Otot", "Saraf Motorik", "Tulang", "Otak Kecil"],
+                answer: 2
+            },
+            {
+                question: "3. Jalur pintas impuls pada gerak refleks diproses di...",
+                options: ["Otak Besar", "Sumsum Tulang Belakang", "Jantung", "Kulit"],
+                answer: 1
+            },
+            {
+                question: "4. Komponen yang berkontraksi untuk menarik tulang dan menghasilkan gerakan dinamakan...",
+                options: ["Otot", "Sendi", "Rangka", "Saraf Sensorik"],
+                answer: 0
+            },
+            {
+                question: "5. Saraf yang bertugas membawa instruksi perintah dari pusat saraf menuju otot disebut...",
+                options: ["Saraf Sensorik", "Saraf Motorik", "Reseptor", "Sendi Engsel"],
+                answer: 1
+            }
+        ];
+
+        let userAnswers = Array(quizQuestions.length).fill(null);
+
+        function renderQuiz() {
+            const quizBox = document.getElementById('quiz-box');
+            quizBox.innerHTML = '';
+
+            quizQuestions.forEach((q, qIndex) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'space-y-3 pb-6 border-b border-slate-100 last:border-0';
+                
+                let optionsHtml = '';
+                q.options.forEach((opt, optIndex) => {
+                    optionsHtml += `
+                        <label class="flex items-center p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-brand-50 transition space-x-3">
+                            <input type="radio" name="question-${qIndex}" value="${optIndex}" onchange="selectAnswer(${qIndex}, ${optIndex})" class="text-brand-600 focus:ring-brand-500">
+                            <span class="text-sm text-slate-700">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                qDiv.innerHTML = `
+                    <h4 class="font-heading font-semibold text-slate-800 text-base">${q.question}</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 font-normal">${optionsHtml}</div>
+                `;
+                quizBox.appendChild(qDiv);
+            });
+
+            // Add Submit Button
+            const submitBtn = document.createElement('button');
+            submitBtn.className = 'w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl transition shadow-md mt-4';
+            submitBtn.innerText = 'Kirim Jawaban Kuis';
+            submitBtn.onclick = calculateScore;
+            quizBox.appendChild(submitBtn);
+        }
+
+        function selectAnswer(qIndex, optIndex) {
+            userAnswers[qIndex] = optIndex;
+        }
+
+        function calculateScore() {
+            let correctCount = 0;
+            userAnswers.forEach((ans, idx) => {
+                if (ans === quizQuestions[idx].answer) {
+                    correctCount++;
+                }
+            });
+
+            const score = (correctCount / quizQuestions.length) * 100;
+            document.getElementById('quiz-box').classList.add('hidden');
+            const resultBox = document.getElementById('quiz-result');
+            resultBox.classList.remove('hidden');
+
+            document.getElementById('quiz-score-text').innerText = `${score} / 100`;
+
+            const feedback = document.getElementById('quiz-feedback');
+            if (score === 100) {
+                feedback.innerText = 'Luar Biasa! Kamu memahami seluruh materi Sistem Saraf & Gerak dengan sempurna!';
+            } else if (score >= 60) {
+                feedback.innerText = 'Bagus! Pemahaman materi kamu sudah lumayan baik. Pelajari lagi poin yang masih keliru.';
+            } else {
+                feedback.innerText = 'Jangan berkecil hati. Coba baca kembali tab Sistem Saraf & Sistem Gerak lalu ulangi kuisnya!';
+            }
+        }
+
+        function resetQuiz() {
+            userAnswers = Array(quizQuestions.length).fill(null);
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-box').classList.remove('hidden');
+            renderQuiz();
+        }
+
+        // Initialize Quiz on load
+        window.onload = function() {
+            renderQuiz();
+        };
+    </script>
+</body>
+</html>
